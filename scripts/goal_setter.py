@@ -20,7 +20,7 @@ def goals_publisher(goal):
     # Cria os publicadores para cada tópico
     pub_list = []
     for i in range(len(goals)):
-        pub = rospy.Publisher('goal_manager/goals_' + str(i), Pose2D, queue_size=10)
+        pub = rospy.Publisher('goal_manager/goal/' + str(i), Pose2D, queue_size=10)
         pub_list.append(pub)
 
     rate = rospy.Rate(10) # 10Hz
