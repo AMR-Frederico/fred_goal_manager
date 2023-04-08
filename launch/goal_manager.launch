@@ -1,0 +1,21 @@
+<launch>
+
+    <node name="goal_setter_node" 
+        pkg="fred_goal_manager" 
+        type="goal_setter.py"
+        output="screen"
+        >
+        
+    </node>
+
+        <node name="goal_provider_node" 
+        pkg="fred_goal_manager" 
+        type="goal_provider.py"
+        output="screen"
+        >
+        
+    </node>
+
+   
+          
+</launch>

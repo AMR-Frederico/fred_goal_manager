@@ -1,41 +1,72 @@
 #!/usr/bin/env python
 
 import rospy
-from geometry_msgs.msg import Pose2D
+from geometry_msgs.msg import PoseArray, PoseStamped
 from std_msgs.msg import Bool
 
-goal_number = 0 
-current_goal = Pose2D()
+class GoalManager:
+    def __init__(self):
+        # Initialize ROS node
+        rospy.init_node("goal_manager")
 
+        # Subscribe to goals and goal reached topics
+        rospy.Subscriber("/goal_manager/goals", PoseArray, self.goals_callback)
+        rospy.Subscriber("/goal_manager/goal/reached", Bool, self.goal_reached_callback)
 
-def publish_new_goal():
-    global current_goal_pub
-    current_goal_pub.publish(current_goal)
-    goal_number = goal_number + 1 
+        # Publisher for current goal topic
+        self.current_goal_pub = rospy.Publisher("/goal_manager/goal/current", PoseStamped, queue_size=10)
 
-def current_goal_callback(msg):
-    global current_goal
-    current_goal = msg
+        # Initialize class variables
+        self.goals = []
+        self.current_goal_index = 0
+        self.goal_reached = False
 
+    def goals_callback(self, data):
+        # Callback function to handle new goals received on "/goal_manager/goals" topic
+        self.goals = data.poses
+        self.publish_current_goal()
 
-def callback_goal_reached(msg):
-    global last_goal_reached
+    def goal_reached_callback(self, data):
+        # Callback function to handle goal reached messages received on "/goal_manager/goal/reached" topic
+        rospy.loginfo("Goal reached: %s", data.data)
 
-    # Verifica se houve uma mudança de False para True
-    if not last_goal_reached and msg.data:
-        publish_new_goal()
+        if data.data and not self.goal_reached:
+            self.goal_reached = True
 
-    # Armazena o último valor recebido
-    last_goal_reached = msg.data
+            # Check if there are more goals to go to
+            if self.current_goal_index < len(self.goals) - 1:
+                # Go to the next goal
+                self.current_goal_index += 1
+                self.publish_current_goal()
+                rospy.loginfo("Changed current goal to index %d", self.current_goal_index)
+            else:
+                rospy.loginfo("Reached the last goal.")
 
+                # Reset the index to the first goal
+                self.current_goal_index = 0
+                self.publish_current_goal()
+
+        # Reset goal_reached to False if it has been True and the new message is False
+        if not data.data and self.goal_reached:
+            self.goal_reached = False
+
+    def publish_current_goal(self):
+        # Create a new PoseStamped message and fill in its fields with the current goal
+        current_goal = PoseStamped()
+        current_goal.header.stamp = rospy.Time.now()
+        current_goal.header.frame_id = "odom"
+        current_goal.pose = self.goals[self.current_goal_index]
+
+        # Publish the message
+        self.current_goal_pub.publish(current_goal)
+
+    def run(self):
+        # Start ROS node and spin
+        rospy.spin()
 
 if __name__ == '__main__':
-    rospy.init_node('goal_provider_node')
-
-    last_goal_reached = False
-
-    rospy.Subscriber('goal_manager/goal/reached', Bool, callback_goal_reached)
-    rospy.Subscriber('goal_manager/goal/' + str(goal_number),Pose2D,current_goal_callback)
-    current_goal_pub = rospy.Publisher('goal_manager/goal/current', Pose2D, queue_size=10)
-
-    rospy.spin()
+    try:
+        gm = GoalManager()
+        gm.run()
+    except rospy.ROSInterruptException:
+        pass
