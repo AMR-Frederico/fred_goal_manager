@@ -3,7 +3,7 @@ import math
 from geometry_msgs.msg import PoseArray, Pose
 
 
-goals = [[0,0,0],[0.5,0.5,0],[-0.5,0.5,0],[0.5,-0.5,0],[-0.5,-0.5,0]]
+goals = [[0,0,0],[2,0,0],[4,2,0]]#,[0,0,0],[0,0,0]]
 frame_id = 'odom'
 
 def goals_publisher(goal):

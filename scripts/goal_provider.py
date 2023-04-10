@@ -43,7 +43,7 @@ class GoalManager:
                 rospy.loginfo("Reached the last goal.")
 
                 # Reset the index to the first goal
-                self.current_goal_index = 0
+                # self.current_goal_index = 0
                 self.publish_current_goal()
 
         # Reset goal_reached to False if it has been True and the new message is False
