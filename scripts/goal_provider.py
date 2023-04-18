@@ -33,7 +33,7 @@ class GoalManager:
 
     def goal_reached_callback(self, data):
         # Callback function to handle goal reached messages received on "/goal_manager/goal/reached" topic
-        rospy.loginfo("Goal reached: %s", data.data)
+        # rospy.loginfo("Goal reached: %s", data.data)
 
         if data.data and not self.goal_reached:
             self.goal_reached = True
@@ -43,10 +43,10 @@ class GoalManager:
                 # Go to the next goal
                 self.current_goal_index += 1
                 self.publish_current_goal()
-                rospy.loginfo("Changed current goal to index %d", self.current_goal_index)
+                # rospy.loginfo("Changed current goal to index %d", self.current_goal_index)
                 self.mission_completed_pub.publish(False)
             else:
-                rospy.loginfo("Reached the last goal.")
+                # rospy.loginfo("Reached the last goal.")
                 self.mission_completed_pub.publish(True)
                 # Reset the index to the first goal
                 # self.current_goal_index = 0
