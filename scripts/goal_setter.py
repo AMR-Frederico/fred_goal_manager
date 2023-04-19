@@ -2,7 +2,7 @@ import rospy
 import math
 from geometry_msgs.msg import PoseArray, Pose
 
-goals = [[0,0,0],[15.2,-1.91,0], [9,-12.7,0]]#, [10.27,-7.22,0], [5.42, -5.4, 0]]#,[0,0,0]]
+goals = [[0,0,0],[7.09, 1, 0],[15.2, -1.91, 0], [9,-12.7,0]]#, [10.27,-7.22,0], [5.42, -5.4, 0]]#,[0,0,0]]
 frame_id = 'odom'
 
 def goals_publisher(goal):
