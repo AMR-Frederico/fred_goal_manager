@@ -2,7 +2,53 @@ import rospy
 import math
 from geometry_msgs.msg import PoseArray, Pose
 
-goals = [[0,0,0],[7.09, 1, 0],[15.2, -1.91, 0], [9,-12.7,0]]#, [10.27,-7.22,0], [5.42, -5.4, 0]]#,[0,0,0]]
+GHOST = 1 
+LED = 0
+
+# goals = [[2.18, 0.02,GHOST],[4.29, 0.36,LED],[5.8, 1.1,GHOST],[6.58, 2.1,LED]]
+
+# goals = [
+#          [2.11,0.23,  GHOST],
+#          [3.50,0.49,  GHOST],
+#          [5.51,1.02,  GHOST],
+#          [7.09,1.45,  GHOST],
+#          [9.06,1.54,  GHOST],
+#          [11.04,1.36,  GHOST],
+#          [13.62, 0.54, GHOST],
+#          [15.74,-0.75,  GHOST],
+#          [16.7,-1.91, LED],
+#          [15.58, -4.19, GHOST],                                                                                                 
+#          [14.5,-6.0,  GHOST],
+#          [13.14, -8.5, GHOST],
+#          [12.0,-10.0, GHOST],
+#          [9.97, -11.84, GHOST],
+#          [9.00,-12.7, LED],
+#          [10.27,-7.22,GHOST], 
+#          [5.42, -5.4, LED]]#,[0,0,0]]
+
+goals = [
+        # [1.88, 0.94, GHOST],
+        [3.69, 1.31, GHOST],
+        # [5.70, 1.52, GHOST],
+        [7.46, 1.58, GHOST],
+        # [9.06, 1.54, GHOST],
+        [10.78, 1.39, GHOST],
+        [12.64, 1.06, GHOST],
+        # [14.65, 0.37, GHOST],
+        [15.93, -0.5, GHOST],
+        [16.7, -1.91, LED],
+        [16.65, -3.06, GHOST],
+        [16.18, -4.43, GHOST],
+        [15.65, -5.45, GHOST], 
+        [15.01, -6.44, GHOST], 
+        [14.22, -7.52, GHOST], 
+        [13.26, -8.69, GHOST],
+        [12.37, -9.68, GHOST],
+        [11.29, -10.78, GHOST],
+        [10.21, -11.79, GHOST],
+        [9.00, -12.7, LED]
+]
+
 frame_id = 'odom'
 
 def goals_publisher(goal):
@@ -28,8 +74,10 @@ def goals_publisher(goal):
             pose_msg = Pose()
             pose_msg.position.x = x
             pose_msg.position.y = y
-            pose_msg.orientation.w = math.cos(math.radians(theta/2))
-            pose_msg.orientation.z = math.sin(math.radians(theta/2))
+            pose_msg.orientation.w = 1 #math.cos(math.radians(theta/2)) # 1
+            # pose_msg.orientation.z = math.sin(math.radians(theta/2)) # comenta
+            # print(theta)
+            pose_msg.orientation.z = theta
             pose_array_msg.poses.append(pose_msg)
         
         # Publica a mensagem
@@ -53,8 +101,9 @@ def calculate_theta(goals):
     
 if __name__ == '__main__':
     try:
-        goals_theta = calculate_theta(goals)
-        goals_publisher(goals_theta)
+        # goals_theta = calculate_theta(goals)
+        # goals_publisher(goals_theta)
+        goals_publisher(goals)
 
     except rospy.ROSInterruptException:
         pass
