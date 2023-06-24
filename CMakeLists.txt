@@ -211,3 +211,7 @@ catkin_install_python(PROGRAMS scripts/goal_provider.py
 catkin_install_python(PROGRAMS scripts/goal_setter.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+catkin_install_python(PROGRAMS scripts/goal_reached.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
