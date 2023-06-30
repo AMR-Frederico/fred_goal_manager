@@ -10,7 +10,7 @@ current_pose = Pose2D()
 goal_pose = Pose2D()
 
 
-ROBOT_IN_GOAL_TOLERANCE = 1
+ROBOT_IN_GOAL_TOLERANCE = 0.001
 
 def goal_reached():
     global goal_pose
@@ -55,8 +55,12 @@ if __name__ == '__main__':
         rospy.Subscriber("/odom", Odometry, odom_callback)
         rospy.Subscriber("/goal_manager/goal/current", PoseStamped, setpoint_callback)
         
+        pub_calculate_spline = rospy.Publisher("spline_generator/cmd/generate_spline",Bool, queue_size = 1)
+        
         pub_goal_reached = rospy.Publisher("goal_manager/goal/reached",Bool, queue_size = 1)
         
+        pub_calculate_spline.publish("true")
+
         while not rospy.is_shutdown():
             goal_reached()
             rate.sleep()
