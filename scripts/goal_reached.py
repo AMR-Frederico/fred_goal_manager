@@ -10,7 +10,7 @@ current_pose = Pose2D()
 goal_pose = Pose2D()
 
 
-ROBOT_IN_GOAL_TOLERANCE = 0.001
+ROBOT_IN_GOAL_TOLERANCE = 0.2
 
 def goal_reached():
     global goal_pose
