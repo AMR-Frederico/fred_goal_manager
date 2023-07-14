@@ -10,7 +10,7 @@ class GoalManager:
        
         # Subscribe to goals and goal reached topics
         rospy.Subscriber("/spline_generator/out/path", Path, self.goals_callback)
-        rospy.Subscriber("/goal_manager/goal/reached", Bool, self.goal_reached_callback)
+        rospy.Subscriber("/goal_manager/goal/spline/reached", Bool, self.goal_reached_callback)
         rospy.Subscriber("/goal_manager/goal/reset", Bool, self.reset_goals_callback)
         # Publisher for current goal topic
         self.current_goal_pub = rospy.Publisher("/goal_manager/goal/current", PoseStamped, queue_size=10)

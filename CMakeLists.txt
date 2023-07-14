@@ -208,7 +208,7 @@ include_directories(
 catkin_install_python(PROGRAMS scripts/goal_provider.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-catkin_install_python(PROGRAMS scripts/goal_setter.py
+catkin_install_python(PROGRAMS scripts/goal_cone_reached.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

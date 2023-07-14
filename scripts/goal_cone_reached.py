@@ -50,18 +50,16 @@ def odom_callback(odom_msg):
 
 if __name__ == '__main__':
     try:
-        rospy.init_node('goal_reached_monitor', anonymous=True)
+        rospy.init_node('goal_cone_reached', anonymous=True)
         rate = rospy.Rate(100)
         
 
         rospy.Subscriber("/odom", Odometry, odom_callback)
-        rospy.Subscriber("/goal_manager/goal/current", PoseStamped, setpoint_callback)
+        rospy.Subscriber("/spline_generator/out/ctrl_points_poset", PoseStamped, setpoint_callback)
         
-        pub_calculate_spline = rospy.Publisher("spline_generator/cmd/generate_spline",Bool, queue_size = 1)
         
-        pub_goal_reached = rospy.Publisher("goal_manager/goal/spline/reached",Bool, queue_size = 1)
+        pub_goal_reached = rospy.Publisher("goal_manager/goal/cone/reached",Bool, queue_size = 1)
         
-        pub_calculate_spline.publish("true")
 
         while not rospy.is_shutdown():
             goal_reached()
