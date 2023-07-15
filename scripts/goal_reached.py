@@ -9,6 +9,7 @@ from geometry_msgs.msg import PoseStamped, Pose2D
 current_pose = Pose2D()
 goal_pose = Pose2D()
 
+
 ROBOT_IN_GOAL_TOLERANCE = 0.2
 
 goal_acknowledge = False
