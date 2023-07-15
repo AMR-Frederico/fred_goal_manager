@@ -27,7 +27,7 @@ def goal_reached():
     in_goal = error_linear < ROBOT_IN_GOAL_TOLERANCE
     
     # print(f"odom: {current_pose.x}, {current_pose.y}| goal_pose: {goal_pose.x}, {goal_pose.y}, error : {error_linear},goal:{in_goal }")
-    
+    print("----------------------")
     pub_goal_reached.publish(in_goal)
 
 
@@ -51,7 +51,7 @@ def odom_callback(odom_msg):
 if __name__ == '__main__':
     try:
         rospy.init_node('goal_cone_reached', anonymous=True)
-        rate = rospy.Rate(100)
+        rate = rospy.Rate(50)
         
 
         rospy.Subscriber("/odom", Odometry, odom_callback)
