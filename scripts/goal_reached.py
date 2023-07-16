@@ -17,7 +17,7 @@ is_path_received = False
 
 ACKNOWLEDGE_TIMEOUT = rospy.Duration(0.5)  # Set the duration for path timeout in seconds
 
-pub_calculate_spline = rospy.Publisher("spline_generator/cmd/generate_spline", Bool, queue_size=1)
+pub_calculate_spline = rospy.Publisher("fred_spline_generator/service/cmd/generate_spline", Bool, queue_size=1)
 pub_goal_reached = rospy.Publisher("goal_manager/goal/reached", Bool, queue_size=1)
 pub_goal_acknowledge = rospy.Publisher("goal_manager/goal/acknowledge", Bool, queue_size=1)
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
         rospy.Subscriber("/odom", Odometry, odom_callback)
         rospy.Subscriber("/goal_manager/goal/current", PoseStamped, setpoint_callback)
-        rospy.Subscriber("/spline_generator/out/path", Path, spline_callback)
+        rospy.Subscriber("/fred_spline_generator/service/out/path", Path, spline_callback)
 
         pub_calculate_spline.publish(True)
 

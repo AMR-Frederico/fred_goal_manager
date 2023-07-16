@@ -55,7 +55,7 @@ if __name__ == '__main__':
         
 
         rospy.Subscriber("/odom", Odometry, odom_callback)
-        rospy.Subscriber("/spline_generator/out/ctrl_points_poset", PoseStamped, setpoint_callback)
+        rospy.Subscriber("/fred_spline_generator/service/out/ctrl_points_pose", PoseStamped, setpoint_callback)
         
         
         pub_goal_reached = rospy.Publisher("goal_manager/goal/cone/reached",Bool, queue_size = 1)
