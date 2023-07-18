@@ -77,7 +77,7 @@ def main():
 
 if __name__ == '__main__':
     rospy.init_node('goal_provider')
-    rate = rospy.Rate(100)
+    rate = rospy.Rate(50)
 
     rospy.Subscriber('/fred_spline_generator/service/out/path', Path, path_callback)
     rospy.Subscriber('/goal_manager/goal/reset', Bool, reset_goals_callback)

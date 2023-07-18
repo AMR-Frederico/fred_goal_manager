@@ -62,7 +62,7 @@ def path_timeout_callback(event):
 if __name__ == '__main__':
     try:
         rospy.init_node('goal_reached_monitor', anonymous=True)
-        rate = rospy.Rate(100)
+        rate = rospy.Rate(50)
 
         rospy.Subscriber("/odom", Odometry, odom_callback)
         rospy.Subscriber("/goal_manager/goal/current", PoseStamped, setpoint_callback)
