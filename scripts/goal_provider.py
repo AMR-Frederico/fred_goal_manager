@@ -1,89 +1,72 @@
-import rospy 
-
+import rospy
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Bool
 from nav_msgs.msg import Path
 
-# ----- pulishers 
-goal_current_pub = rospy.Publisher('/goal_manager/goal/current', PoseStamped, queue_size=10)
-mission_completed_pub = rospy.Publisher('/goal_manager/goal/mission_completed', Bool, queue_size=1)
+class GoalProvider:
+    def __init__(self):
+        rospy.init_node('goal_provider')
+        self.rate = rospy.Rate(50)
+        self.trajectory = []
+        self.reset_goals = False
+        self.is_goal_reached = False
+        self.previous_goal_reached = False
+        self.index = 0
+        self.current_goal = PoseStamped()
 
-trajectory = []
+        # Publishers
+        self.goal_current_pub = rospy.Publisher('/goal_manager/goal/current', PoseStamped, queue_size=10)
+        self.mission_completed_pub = rospy.Publisher('/goal_manager/goal/mission_completed', Bool, queue_size=1)
 
-reset_goals = False
+        # Subscribers
+        rospy.Subscriber('/fred_spline_generator/service/out/path', Path, self.path_callback)
+        rospy.Subscriber('/goal_manager/goal/reset', Bool, self.reset_goals_callback)
+        rospy.Subscriber('/goal_manager/goal/spline/reached', Bool, self.goal_reached_callback)
 
-is_goal_reached = False
-previous_goal_reached = False
+    def path_callback(self, path_msg):
+        self.trajectory = path_msg.poses
+        rospy.loginfo("GOAL PROVIDER: path received")
 
-index = 0
+    def reset_goals_callback(self, reset_msg):
+        self.reset_goals = reset_msg.data
+        if self.reset_goals:
+            self.index = 0
+        rospy.loginfo('GOAL PROVIDER: reset goals')
 
-current_goal = PoseStamped()
+    def goal_reached_callback(self, reached_msg):
+        self.is_goal_reached = reached_msg.data
 
-def path_callback(path_msg):
-    global trajectory
-    
-    trajectory = path_msg.poses
-    rospy.loginfo("GOAL PROVIDER: path received")
+    def main(self):
+        mission_completed = False
 
-def reset_goals_callback(reset_msg):
-    global reset_goals
-    global index
+        if len(self.trajectory) == 0:
+            rospy.loginfo("GOAL PROVIDER: path has not been received")
+            return
 
-    reset_goals = reset_msg.data
-    
-    if (reset_goals): 
-        index = 0
-    
-    rospy.loginfo('GOAL PROVIDER: reset goals')
+        if self.is_goal_reached and not self.previous_goal_reached:
+            if self.index < len(self.trajectory) - 1:
+                self.current_goal.header.stamp = rospy.Time.now()
+                self.current_goal.header.frame_id = 'map'
+                self.current_goal.pose = self.trajectory[self.index].pose
 
+                self.goal_current_pub.publish(self.current_goal)
 
-def goal_reached_callback(reached_msg): 
-    global is_goal_reached
+                self.index += 1
 
-    is_goal_reached = reached_msg.data
+                rospy.loginfo('GOAL PROVIDER: sending new goal')
+            else:
+                mission_completed = True
+                self.mission_completed_pub.publish(mission_completed)
 
+                rospy.loginfo('GOAL PROVIDER: mission completed')
 
-def main():
-    global is_goal_reached, previous_goal_reached
-    global index
-    global current_goal, trajectory
+        self.previous_goal_reached = self.is_goal_reached
 
-    mission_completed = False
-
-    if len(trajectory) == 0:
-        rospy.loginfo("GOAL PROVIDER: path has not been received")
-        return
-    
-    if (is_goal_reached and not previous_goal_reached): 
-        
-        if (index < len(trajectory) - 1): 
-            current_goal.header.stamp = rospy.Time.now()
-            current_goal.header.frame_id = 'map'
-            current_goal.pose = trajectory[index].pose  
-
-            goal_current_pub.publish(current_goal)
-        
-            index += 1
-
-            rospy.loginfo('GOAL PROVIDER: sending new goal')
-
-        else: 
-            mission_completed = True
-            mission_completed_pub.publish(mission_completed)
-
-            rospy.loginfo('GOAL PROVIDER: mission completed')
-    
-    previous_goal_reached = is_goal_reached
+    def run(self):
+        while not rospy.is_shutdown():
+            self.main()
+            self.rate.sleep()
 
 if __name__ == '__main__':
-    rospy.init_node('goal_provider')
-    rate = rospy.Rate(50)
-
-    rospy.Subscriber('/fred_spline_generator/service/out/path', Path, path_callback)
-    rospy.Subscriber('/goal_manager/goal/reset', Bool, reset_goals_callback)
-    rospy.Subscriber('/goal_manager/goal/spline/reached', Bool, goal_reached_callback)
-
-    while not rospy.is_shutdown():
-        main()  
-        rate.sleep()
-
+    goal_provider = GoalProvider()
+    goal_provider.run()
