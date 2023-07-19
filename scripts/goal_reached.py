@@ -68,7 +68,7 @@ if __name__ == '__main__':
         rospy.Subscriber("/goal_manager/goal/current", PoseStamped, setpoint_callback)
         rospy.Subscriber("/fred_spline_generator/service/out/path", Path, spline_callback)
 
-        pub_calculate_spline.publish(True)
+        # pub_calculate_spline.publish(True)
 
 
         while not rospy.is_shutdown():
