@@ -36,7 +36,7 @@ class GoalProvider:
     def goal_reached_callback(self, reached_msg):
         self.is_goal_reached = reached_msg.data
 
-        print(f"reached callback msg: {self.is_goal_reached }")
+        # print(f"reached callback msg: {self.is_goal_reached }")
 
     def main(self):
         mission_completed = False
@@ -68,7 +68,7 @@ class GoalProvider:
         while not rospy.is_shutdown():
             self.main()
             self.rate.sleep()
-
+    
 if __name__ == '__main__':
     goal_provider = GoalProvider()
     goal_provider.run()

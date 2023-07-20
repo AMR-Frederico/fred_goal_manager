@@ -30,7 +30,11 @@ class GoalManager:
         error_linear = math.hypot(dx, dy)
         in_goal = error_linear < self.ROBOT_IN_GOAL_TOLERANCE
         
-        # rospy.loginfo('GOAL REACHED: arrieved at current goal')
+        if(in_goal):
+             rospy.loginfo('GOAL REACHED: arrieved at current goal')
+        else:
+             rospy.loginfo('GOAL REACHED: NOT arrieved at current goal')
+            
 
 
         self.pub_goal_reached.publish(in_goal)
@@ -44,11 +48,13 @@ class GoalManager:
         self.current_pose.x = odom_msg.pose.pose.position.x
         self.current_pose.y = odom_msg.pose.pose.position.y
 
+        self.goal_reached()
 
-    def run(self):
-        rate = rospy.Rate(50)
+
+    # def run(self):
+    #     rate = rospy.Rate(50)
         
-        while not rospy.is_shutdown():
-            self.goal_reached()
-            rate.sleep()
+    #     while not rospy.is_shutdown():
+    #         self.goal_reached()
+    #         rate.sleep()
 

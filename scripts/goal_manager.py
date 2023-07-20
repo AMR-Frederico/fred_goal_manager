@@ -13,7 +13,12 @@ if __name__ == '__main__':
         gm = GoalManager()
         
         goal_provider.run()
-        gm.run()
-        
+        # gm.run()
+        while not rospy.is_shutdown():
+            goal_provider.main()
+            gm.goal_reached()
+            
+            goal_provider.rate.sleep()
+
     except rospy.ROSInterruptException:
         pass
