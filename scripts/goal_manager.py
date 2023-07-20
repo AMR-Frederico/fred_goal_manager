@@ -6,7 +6,7 @@ from goal_provider import GoalProvider
 
 if __name__ == '__main__':
         
-    rospy.init_node('goal_reached_monitor', anonymous=True)    
+    rospy.init_node('goal_manager_node', anonymous=True)    
 
     try:
         goal_provider = GoalProvider()
