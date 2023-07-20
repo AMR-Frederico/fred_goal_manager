@@ -10,7 +10,7 @@ from geometry_msgs.msg import PoseStamped, Pose2D
 
 class GoalManager:
     def __init__(self):
-        rospy.init_node('goal_reached_monitor', anonymous=True)
+        
 
         self.current_pose = Pose2D()
         self.goal_pose = Pose2D()
@@ -21,9 +21,7 @@ class GoalManager:
 
         rospy.Subscriber("/odom", Odometry, self.odom_callback)
         rospy.Subscriber("/goal_manager/goal/current", PoseStamped, self.setpoint_callback)
-        rospy.Subscriber("/fred_spline_generator/service/out/path", Path, self.spline_callback)
 
-        self.pub_calculate_spline.publish(True)
 
     def goal_reached(self):
         dx = self.goal_pose.x - self.current_pose.x

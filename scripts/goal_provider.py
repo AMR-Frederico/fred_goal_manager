@@ -5,7 +5,7 @@ from nav_msgs.msg import Path
 
 class GoalProvider:
     def __init__(self):
-        rospy.init_node('goal_provider')
+        # rospy.init_node('goal_provider')
         self.rate = rospy.Rate(50)
         self.trajectory = []
         self.reset_goals = False
