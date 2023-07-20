@@ -21,7 +21,7 @@ class GoalProvider:
         # Subscribers
         rospy.Subscriber('/fred_spline_generator/service/out/path', Path, self.path_callback)
         rospy.Subscriber('/goal_manager/goal/reset', Bool, self.reset_goals_callback)
-        rospy.Subscriber('/goal_manager/goal/spline/reached', Bool, self.goal_reached_callback)
+        rospy.Subscriber('/goal_manager/goal/reached', Bool, self.goal_reached_callback)
 
     def path_callback(self, path_msg):
         self.trajectory = path_msg.poses
@@ -35,6 +35,8 @@ class GoalProvider:
 
     def goal_reached_callback(self, reached_msg):
         self.is_goal_reached = reached_msg.data
+
+        print(f"reached callback msg: {self.is_goal_reached }")
 
     def main(self):
         mission_completed = False

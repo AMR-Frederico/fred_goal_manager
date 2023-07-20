@@ -29,6 +29,9 @@ class GoalManager:
 
         error_linear = math.hypot(dx, dy)
         in_goal = error_linear < self.ROBOT_IN_GOAL_TOLERANCE
+        
+        # rospy.loginfo('GOAL REACHED: arrieved at current goal')
+
 
         self.pub_goal_reached.publish(in_goal)
 

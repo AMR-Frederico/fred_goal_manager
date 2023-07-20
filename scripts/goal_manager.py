@@ -12,8 +12,8 @@ if __name__ == '__main__':
         goal_provider = GoalProvider()
         gm = GoalManager()
         
-        gm.run()
         goal_provider.run()
+        gm.run()
         
     except rospy.ROSInterruptException:
         pass
