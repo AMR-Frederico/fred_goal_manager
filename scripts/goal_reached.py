@@ -15,12 +15,21 @@ class GoalManager:
         self.current_pose = Pose2D()
         self.goal_pose = Pose2D()
 
-        self.ROBOT_IN_GOAL_TOLERANCE = 0.2
+        self.first_goal_reached = False
+
+        self.ROBOT_IN_GOAL_TOLERANCE = 0.25
 
         self.pub_goal_reached = rospy.Publisher("goal_manager/goal/reached", Bool, queue_size=1)
+        
 
         rospy.Subscriber("/odom", Odometry, self.odom_callback)
         rospy.Subscriber("/goal_manager/goal/current", PoseStamped, self.setpoint_callback)
+        rospy.Subscriber('/navigation/on', Bool, self.navigation_on_callback)
+
+    def navigation_on_callback(self, msg):
+        pass
+        # if msg.data:
+        #     self.first_goal_reached = True
 
 
     def goal_reached(self):
@@ -29,15 +38,19 @@ class GoalManager:
 
         error_linear = math.hypot(dx, dy)
         in_goal = error_linear < self.ROBOT_IN_GOAL_TOLERANCE
+
+        print(in_goal)
+        print(error_linear)
         
         if(in_goal):
              rospy.loginfo('GOAL REACHED: arrieved at current goal')
-        else:
-             rospy.loginfo('GOAL REACHED: NOT arrieved at current goal')
+        # else:
+        #      rospy.loginfo('GOAL REACHED: NOT arrieved at current goal')
             
 
 
-        self.pub_goal_reached.publish(in_goal)
+        self.pub_goal_reached.publish(in_goal or self.first_goal_reached)
+        self.first_goal_reached = False
 
     def setpoint_callback(self, msg):
         self.goal_pose.x = msg.pose.position.x
