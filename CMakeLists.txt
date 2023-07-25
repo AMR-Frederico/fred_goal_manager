@@ -10,7 +10,6 @@ project(fred_goal_manager)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -205,9 +204,3 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-catkin_install_python(PROGRAMS scripts/goal_provider.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-catkin_install_python(PROGRAMS scripts/goal_setter.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)

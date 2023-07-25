@@ -1,79 +1,74 @@
-#!/usr/bin/env python
-
 import rospy
-from geometry_msgs.msg import PoseArray, PoseStamped
+from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Bool
+from nav_msgs.msg import Path
 
-class GoalManager:
+class GoalProvider:
     def __init__(self):
-        # Initialize ROS node
-        rospy.init_node("goal_manager")
+        # rospy.init_node('goal_provider')
+        self.rate = rospy.Rate(50)
+        self.trajectory = []
+        self.reset_goals = False
+        self.is_goal_reached = False
+        self.previous_goal_reached = False
+        self.index = 0
+        self.current_goal = PoseStamped()
 
-        # Subscribe to goals and goal reached topics
-        rospy.Subscriber("/goal_manager/goals", PoseArray, self.goals_callback)
-        rospy.Subscriber("/goal_manager/goal/reached", Bool, self.goal_reached_callback)
-        rospy.Subscriber("/goal_manager/goal/reset", Bool, self.reset_goals_callback)
-        # Publisher for current goal topic
-        self.current_goal_pub = rospy.Publisher("/goal_manager/goal/current", PoseStamped, queue_size=10)
-        self.mission_completed_pub = rospy.Publisher("/goal_manager/goal/mission_completed", Bool, queue_size=10)
-        # Initialize class variables
-        self.goals = []
-        self.current_goal_index = 0
-        self.goal_reached = False
+        # Publishers
+        self.goal_current_pub = rospy.Publisher('/goal_manager/goal/current', PoseStamped, queue_size=10)
+        self.mission_completed_pub = rospy.Publisher('/goal_manager/goal/mission_completed', Bool, queue_size=1)
 
-    def reset_goals_callback(self,msg):
-        reset = msg.data 
-        if(reset):
-             self.current_goal_index = 0
+        # Subscribers
+        rospy.Subscriber('/fred_spline_generator/service/out/path', Path, self.path_callback)
+        rospy.Subscriber('/goal_manager/goal/reset', Bool, self.reset_goals_callback)
+        rospy.Subscriber('/goal_manager/goal/reached', Bool, self.goal_reached_callback)
 
-    def goals_callback(self, data):
-        # Callback function to handle new goals received on "/goal_manager/goals" topic
-        self.goals = data.poses
-        self.publish_current_goal()
+    def path_callback(self, path_msg):
+        self.trajectory = path_msg.poses
+        rospy.loginfo("GOAL PROVIDER: path received")
 
-    def goal_reached_callback(self, data):
-        # Callback function to handle goal reached messages received on "/goal_manager/goal/reached" topic
-        # rospy.loginfo("Goal reached: %s", data.data)
+    def reset_goals_callback(self, reset_msg):
+        self.reset_goals = reset_msg.data
+        if self.reset_goals:
+            self.index = 0
+        rospy.loginfo('GOAL PROVIDER: reset goals')
 
-        if data.data and not self.goal_reached:
-            self.goal_reached = True
+    def goal_reached_callback(self, reached_msg):
+        self.is_goal_reached = reached_msg.data
 
-            # Check if there are more goals to go to
-            if self.current_goal_index < len(self.goals) - 1:
-                # Go to the next goal
-                self.current_goal_index += 1
-                self.publish_current_goal()
-                # rospy.loginfo("Changed current goal to index %d", self.current_goal_index)
-                self.mission_completed_pub.publish(False)
+        # print(f"reached callback msg: {self.is_goal_reached }")
+
+    def main(self):
+        mission_completed = False
+
+        if len(self.trajectory) == 0:
+            rospy.loginfo("GOAL PROVIDER: path has not been received")
+            return
+
+        if self.is_goal_reached and not self.previous_goal_reached:
+            if self.index < len(self.trajectory) - 1:
+                self.current_goal.header.stamp = rospy.Time.now()
+                self.current_goal.header.frame_id = 'map'
+                self.current_goal.pose = self.trajectory[self.index].pose
+
+                self.goal_current_pub.publish(self.current_goal)
+
+                self.index += 1
+
+                rospy.loginfo('GOAL PROVIDER: sending new goal')
             else:
-                # rospy.loginfo("Reached the last goal.")
-                self.mission_completed_pub.publish(True)
-                # Reset the index to the first goal
-                # self.current_goal_index = 0
-                self.publish_current_goal()
+                mission_completed = True
+                self.mission_completed_pub.publish(mission_completed)
 
-        # Reset goal_reached to False if it has been True and the new message is False
-        if not data.data and self.goal_reached:
-            self.goal_reached = False
+                rospy.loginfo('GOAL PROVIDER: mission completed')
 
-    def publish_current_goal(self):
-        # Create a new PoseStamped message and fill in its fields with the current goal
-        current_goal = PoseStamped()
-        current_goal.header.stamp = rospy.Time.now()
-        current_goal.header.frame_id = "odom"
-        current_goal.pose = self.goals[self.current_goal_index]
-
-        # Publish the message
-        self.current_goal_pub.publish(current_goal)
-      
+        self.previous_goal_reached = self.is_goal_reached
 
     def run(self):
-        # Start ROS node and spin
-        rospy.spin()
-
+        while not rospy.is_shutdown():
+            self.main()
+            self.rate.sleep()
+    
 if __name__ == '__main__':
-    try:
-        gm = GoalManager()
-        gm.run()
-    except rospy.ROSInterruptException:
-        pass
+    goal_provider = GoalProvider()
+    goal_provider.run()
