@@ -25,9 +25,8 @@ class GoalReached:
         rospy.Subscriber("/odom", Odometry, self.odom_callback)
         rospy.Subscriber("/goal_manager/goal/current", PoseStamped, self.setpoint_callback)
         rospy.Subscriber('/navigation/on', Bool, self.navigation_on_callback)
-       
-        self.pub_goal_reached.publish(False)
-        rospy.loginfo("GOAL_REACHED: init")
+
+ 		       rospy.loginfo("GOAL_REACHED: init")
 
     def navigation_on_callback(self, msg):
         pass

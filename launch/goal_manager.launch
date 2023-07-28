@@ -7,6 +7,14 @@
         >
         
     </node>
+
+     <node name="cone_manager" 
+        pkg="fred_goal_manager" 
+        type="goal_cone_manager.py"
+        output="screen"
+        >
+        
+    </node>
    
           
 </launch>

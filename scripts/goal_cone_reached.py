@@ -131,7 +131,7 @@ class ConeReached:
 if __name__ == "__main__":
 
     rospy.init_node('cone_manager')
-    rate = rospy.Rate(0.5)
+    rate = rospy.Rate(50)
     
     cone = ConeReached()
     

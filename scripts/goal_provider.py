@@ -55,15 +55,9 @@ class GoalProvider:
 
         if len(self.trajectory) == 0:
             rospy.loginfo("GOAL PROVIDER: path has not been received")
-            return
 
         if self.is_goal_reached and not self.previous_goal_reached:
             if self.index < len(self.trajectory) - 1:
-                self.current_goal.header.stamp = rospy.Time.now()
-                self.current_goal.header.frame_id = 'map'
-                self.current_goal.pose = self.trajectory[self.index].pose
-
-                self.goal_current_pub.publish(self.current_goal)
 
                 self.index += 1
 
@@ -73,6 +67,11 @@ class GoalProvider:
                 self.mission_completed_pub.publish(mission_completed)
 
                 rospy.loginfo('GOAL PROVIDER: mission completed')
+        
+        self.current_goal.header.stamp = rospy.Time.now()
+        self.current_goal.header.frame_id = 'map'
+        self.current_goal.pose = self.trajectory[self.index].pose
+        self.goal_current_pub.publish(self.current_goal)
 
         self.previous_goal_reached = self.is_goal_reached
 
