@@ -14,6 +14,8 @@ class PathMonitor:
         # config
         self.TRANSFORM_TOLERANCE = 0.2 # m
 
+        rospy.Subscriber("/odom", Odometry, self._get_position)
+
 
         # intern vars
         self.tf_listener = tf.TransformListener()    
@@ -21,11 +23,14 @@ class PathMonitor:
 
 
 
-    def _get_position(self):
+    def _get_position(self, odom_msg):
 
-        now = rospy.Time(0)
-        self.tf_listener.waitForTransform("/map", "/base_link", now)
-        (trans, rot) = self.tf_listener.lookupTransform("/base_link", "/map", now)
+        # now = rospy.Time(0)
+        # self.tf_listener.waitForTransform("/map", "/base_link", now)
+        # (trans, rot) = self.tf_listener.lookupTransform("/base_link", "/map", now)
+
+        trans = odom_msg.pose.pose.position
+        rot = odom_msg.pose.pose.orientation
 
         return (trans, rot)
 
@@ -38,14 +43,17 @@ class PathMonitor:
         # check if in target pose
         if trans[0] - target_trans[0] < self.TRANSFORM_TOLERANCE:
 
+            print(f"GOAL REACHED: DIST X OK -> {trans[0] - target_trans[0]}")
             return True
         
         if trans[1] - target_trans[1] < self.TRANSFORM_TOLERANCE:
             
+            print(f"GOAL REACHED: DIST Y OK -> {trans[1] - target_trans[1]}")
+
             return True
         
         return False
-
+        print(f"DIST NOK    DX = {trans[0] - target_trans[0]}  |  DY = {trans[1] - target_trans[1]}")
 
 
     def routine(self):

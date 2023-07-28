@@ -27,6 +27,8 @@ class GoalProvider:
         rospy.Subscriber('/goal_manager/goal/reached', Bool, self.goal_reached_callback)
         # rospy.Subscriber('/navigation/on', Bool, self.pub_first_goal_reached_navigaiton_on_callbak)
 
+        rospy.loginfo("GOAL_PROVIDER: init")
+
     # def pub_first_goal_reached_navigaiton_on_callbak(self):
 
     #     # self.goal_reached_pub = Bool(True)
