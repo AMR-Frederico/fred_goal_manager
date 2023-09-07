@@ -5,59 +5,22 @@ from geometry_msgs.msg import PoseArray, Pose
 GHOST = 1 
 LED = 0
 
-# goals = [[2.18, 0.02,GHOST],[4.29, 0.36,LED],[5.8, 1.1,GHOST],[6.58, 2.1,LED]]
-
-# goals = [
-#          [2.11,0.23,  GHOST],
-#          [3.50,0.49,  GHOST],
-#          [5.51,1.02,  GHOST],
-#          [7.09,1.45,  GHOST],
-#          [9.06,1.54,  GHOST],
-#          [11.04,1.36,  GHOST],
-#          [13.62, 0.54, GHOST],
-#          [15.74,-0.75,  GHOST],
-#          [16.7,-1.91, LED],
-#          [15.58, -4.19, GHOST],                                                                                                 
-#          [14.5,-6.0,  GHOST],
-#          [13.14, -8.5, GHOST],
-#          [12.0,-10.0, GHOST],
-#          [9.97, -11.84, GHOST],
-#          [9.00,-12.7, LED],
-#          [10.27,-7.22,GHOST], 
-#          [5.42, -5.4, LED]]#,[0,0,0]]
-
-goals = [
-        # [1.88, 0.94, GHOST],
-        # [3.69, 1.31, GHOST],
-        # [5.70, 1.52, GHOST],
-        # [7.46, 1.58, GHOST],
-        # [9.06, 1.54, GHOST],
-        [9.06, 4.00, LED],
-        #[12.64, 1.06, GHOST],
-        # [14.65, 0.37, GHOST],
-        # [15.93, -0.5, GHOST],
-        [16.7, -1.91, LED],
-        # [16.65, -3.06, GHOST],
-        # [16.18, -4.43, GHOST],
-        # [15.65, -5.45, GHOST], 
-        # [15.01, -6.44, GHOST], 
-        # [14.22, -7.52, GHOST], 
-        [13.26, -8.69, GHOST],
-        #[12.37, -9.68, GHOST],
-        #[11.29, -10.78, GHOST],
-        #[10.21, -11.79, GHOST],
-        [9.00, -12.7, LED]
-]
+goals = [[3.0, 0.00, LED], 
+          [5.50,00, LED ], 
+          [10.0, 0.00, LED]]
 
 
-# goals = [
-#         [2,0, LED],
-#         [4,0, LED],
-#         [6,0, LED], 
-#         [8,0, LED]
-       
-# ]
-
+#goals = [ 
+#         [6.14, 4.00, GHOST],      # ponto fantasma 
+#         [8.35, 7.25, LED],      # marco 1
+#         [1.04, 13.8, LED],     # marco 2
+#          #[2.94, 14.04, GHOST ],    # fantasma #
+# 	 #     [5.92, 0.45, GHOST],      # fantasma 
+#         [1.04, 6, GHOST],     # fantasma
+#        #   [11.00, 4.3, GHOST],
+#         [7.12, 2.56, GHOST],
+#         [8.03, 0.84, LED]       # marco 3    
+#]
 
 frame_id = 'odom'
 
@@ -72,7 +35,7 @@ def goals_publisher(goal):
     # Cria o publicador para o tópico
     pub = rospy.Publisher('goal_manager/goals', PoseArray, queue_size=10)
 
-    rate = rospy.Rate(10) # 10Hz
+    rate = rospy.Rate(50) # 10Hz
     while not rospy.is_shutdown():
         # Cria uma mensagem PoseArray vazia
         pose_array_msg = PoseArray()
