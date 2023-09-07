@@ -9,7 +9,7 @@ from geometry_msgs.msg import Twist,PoseStamped,Pose2D
 current_pose = Pose2D()
 goal_pose = Pose2D()
 
-
+waiting_cone_reached_ack = False
 
 
 ROBOT_IN_GOAL_TOLERANCE = 0.2
@@ -24,7 +24,7 @@ def goal_reached():
 
     # calculo do modulo do erro linear
     error_linear = math.hypot(dx, dy)
-    in_goal = error_linear < ROBOT_IN_GOAL_TOLERANCE
+    in_goal = (error_linear < ROBOT_IN_GOAL_TOLERANCE) or waiting_cone_reached_ack
     
     # print(f"odom: {current_pose.x}, {current_pose.y}| goal_pose: {goal_pose.x}, {goal_pose.y}, error : {error_linear},goal:{in_goal }")
     print("----------------------")
@@ -36,7 +36,11 @@ def setpoint_callback(msg):
     goal_pose.x = msg.pose.position.x
     goal_pose.y = msg.pose.position.y 
 
-   
+def cone_reached_acknowledge(msg):
+    global waiting_cone_reached_ack
+
+    waiting_cone_reached_ack = True
+
 
 
 def odom_callback(odom_msg):
@@ -56,6 +60,7 @@ if __name__ == '__main__':
 
         rospy.Subscriber("/odom", Odometry, odom_callback)
         rospy.Subscriber("/fred_spline_generator/service/out/ctrl_points_pose", PoseStamped, setpoint_callback)
+        rospy.Subscriber("/goal_manager/goal/cone/reached/ack", Bool, cone_reached_acknowledge)
         
         
         pub_goal_reached = rospy.Publisher("goal_manager/goal/cone/reached",Bool, queue_size = 1)
